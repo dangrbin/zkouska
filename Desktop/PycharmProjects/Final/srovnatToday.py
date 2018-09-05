@@ -15,6 +15,7 @@ import json.decoder
 
 promena = 2
 
+
 def hlavni(hod):
     tab = []
     pole = []
@@ -27,8 +28,11 @@ def hlavni(hod):
     i = 2
     cislo = 1
     client = fbchat.Client('neo712@seznam.cz', 'mrpythoner1')
-    friends = client.searchForUsers("Karel Fuksa")
-    friend = friends[0]
+    group = client.searchForGroups("skupina")
+    group_Skupina = group[0]
+
+
+
     time.sleep(12)
 
     while i < 3:
@@ -49,8 +53,9 @@ def hlavni(hod):
                 string2 = file2
                 pocet = 0
                 rat = difflib.SequenceMatcher(None, string1, string2).ratio()
+                print(rat)
                 if rat > 0.7:
-
+                    print(file + " vs " + file2)
                     vip = "vip/" + datum + "/" + file
                     fortuna = "fortuna/" + datum + "/" + file2
                     try:
@@ -84,6 +89,13 @@ def hlavni(hod):
                         hodnota3 = float(data2["zapas"]["hoste"][0])
                     except (ValueError, IndexError):
                         # print("Error v hodnotě: " + file2)
+                        continue
+
+                    try:
+                        marze_vip = 1 / (1 / float(hodnota[0]) + 1 / float(hodnota[1]) + 1 / float(hodnota[2]))
+                        marze_fortuna = 1 / (1 / hodnota1 + 1 / hodnota2 + 1 / hodnota3)
+                    except IndexError:
+                        print("index:" + str(file))
                         continue
 
                     tab.append(hodnota1)
@@ -122,9 +134,12 @@ def hlavni(hod):
                                         json.dump(tab2, soubor3, indent=4)
                                         soubor3.close()
                                         zprava = file + ": rozdíl domácí " + str(round(vysledek, 2)) + ", VIP: " + \
-                                                 str(hodnota[0]) + ", Fortuna: " + str(hodnota1)
+                                                 str(hodnota[0]) + ", Fortuna: " + str(hodnota1) + ", Marže Fortuna: " + \
+                                                 str(round(marze_fortuna, 3)) + ", Marže VIP: " + str(round(marze_vip, 3))
+
                                         sent = client.send(fbchat.Message(text=zprava),
-                                                           thread_id=friend.uid, thread_type=fbchat.ThreadType.USER)
+                                                           thread_id=group_Skupina.uid, thread_type=fbchat.ThreadType.GROUP)
+
                                         if sent:
                                             print("Message sent successfully!")
                                         pocet = 1
@@ -162,18 +177,22 @@ def hlavni(hod):
                                         json.dump(tab2, soubor3, indent=4)
                                         soubor3.close()
                                         zprava = file + ": rozdíl remíza " + str(round(vysledek, 2)) + ", VIP: " + \
-                                                 str(hodnota[1]) + ", Fortuna: " + str(hodnota2)
+                                                 str(hodnota[1]) + ", Fortuna: " + str(hodnota2) + ", Marže Fortuna: " + \
+                                                 str(round(marze_fortuna, 3)) + ", Marže VIP: " + str(round(marze_vip, 3))
                                         sent = client.send(fbchat.Message(text=zprava),
-                                                           thread_id=friend.uid, thread_type=fbchat.ThreadType.USER)
+                                                           thread_id=group_Skupina.uid, thread_type=fbchat.ThreadType.GROUP)
+
                                         if sent:
                                             print("Message sent successfully!")
                                         pocet = 2
 
                                     if pocet == 1:
                                         zprava = file + ": rozdíl remíza " + str(round(vysledek, 2)) + ", VIP: " + \
-                                                 str(hodnota[1]) + ", Fortuna: " + str(hodnota2)
+                                                 str(hodnota[1]) + ", Fortuna: " + str(hodnota2) + ", Marže Fortuna: " + \
+                                                 str(round(marze_fortuna, 3)) + ", Marže VIP: " + str(round(marze_vip, 3))
                                         sent = client.send(fbchat.Message(text=zprava),
-                                                           thread_id=friend.uid, thread_type=fbchat.ThreadType.USER)
+                                                           thread_id=group_Skupina.uid, thread_type=fbchat.ThreadType.GROUP)
+
                                         if sent:
                                             print("Message sent successfully!")
                                         pocet = 2
@@ -210,17 +229,21 @@ def hlavni(hod):
                                         json.dump(tab2, soubor3, indent=4)
                                         soubor3.close()
                                         zprava = file + ": rozdíl hosté " + str(round(vysledek, 2)) + ", VIP: " + \
-                                                 str(hodnota[2]) + ", Fortuna: " + str(hodnota3)
+                                                 str(hodnota[2]) + ", Fortuna: " + str(hodnota3) + ", Marže Fortuna: " + \
+                                                 str(round(marze_fortuna, 3)) + ", Marže VIP: " + str(round(marze_vip, 3))
                                         sent = client.send(fbchat.Message(text=zprava),
-                                                           thread_id=friend.uid, thread_type=fbchat.ThreadType.USER)
+                                                           thread_id=group_Skupina.uid, thread_type=fbchat.ThreadType.GROUP)
+
                                         if sent:
                                             print("Message sent successfully!")
 
                                     if pocet == 2 or pocet == 1:
                                         zprava = file + ": rozdíl hosté " + str(round(vysledek, 2)) + ", VIP: " + \
-                                                 str(hodnota[2]) + ", Fortuna: " + str(hodnota3)
+                                                 str(hodnota[2]) + ", Fortuna: " + str(hodnota3) + ", Marže Fortuna: " + \
+                                                 str(round(marze_fortuna, 3)) + ", Marže VIP: " + str(round(marze_vip, 3))
                                         sent = client.send(fbchat.Message(text=zprava),
-                                                           thread_id=friend.uid, thread_type=fbchat.ThreadType.USER)
+                                                           thread_id=group_Skupina.uid, thread_type=fbchat.ThreadType.GROUP)
+
                                         if sent:
                                             print("Message sent successfully!")
 
@@ -252,6 +275,8 @@ def historie(hod):
     datum = str(den) + ". " + str(mesic) + ". " + str(rok)
     i = 2
     cislo = 1
+
+    time.sleep(12)
 
     while i < 3:
         for file in os.listdir("vip/" + datum):
@@ -311,106 +336,130 @@ def historie(hod):
 
                     for b in range(0, len(hodnota)):
                         if b == 0:
-                            try:
-                                if float(hodnota[0]) > hodnota1:
-                                    vysledek = float(hodnota[0]) / hodnota1
-                                else:
-                                    vysledek = hodnota1 / float(hodnota[0])
-                            except ValueError:
+                            if hodnota[0] == "" or hodnota1 == "":
+                                print("Chyba!")
                                 continue
 
-                            if vysledek > hod:
-                                dat = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                                dataN["cas"] = str(dat)
-                                dataN["rozdil domaci"] = str(round(vysledek, 2))
+                            if float(hodnota[0]) > 5 or hodnota1 > 5:
+                                pass
+                            else:
 
-                                pole.append(hodnota[0])
-                                pole.append(hodnota[1])
                                 try:
-                                    pole.append(hodnota[2])
-                                except IndexError:
-                                    print("Index:" + file)
-                                    time.sleep(0.5)
-                                    pole.append(hodnota[2])
+                                    if float(hodnota[0]) > hodnota1:
+                                        vysledek = float(hodnota[0]) / hodnota1
+                                    else:
+                                        vysledek = hodnota1 / float(hodnota[0])
+                                except ValueError:
+                                    continue
 
-                                pole2.append(hodnota1)
-                                pole2.append(hodnota2)
-                                pole2.append(hodnota3)
-                                if os.path.isfile("hodnotaNad/kratkaH/" + file):
-                                    pass
-                                else:
-                                    tab2 = {}
-                                    soubor2 = open("hodnotaNad/kratkaH/" + file, "w+", encoding="utf-8")
-                                    json.dump(tab2, soubor2, indent=4)
-                                    soubor2.close()
+                                if vysledek > hod:
+                                    dat = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                    dataN["cas"] = str(dat)
+                                    dataN["rozdil domaci"] = str(round(vysledek, 2))
+
+                                    pole.append(hodnota[0])
+                                    pole.append(hodnota[1])
+                                    try:
+                                        pole.append(hodnota[2])
+                                    except IndexError:
+                                        print("Index:" + file)
+                                        time.sleep(0.5)
+                                        pole.append(hodnota[2])
+
+                                    pole2.append(hodnota1)
+                                    pole2.append(hodnota2)
+                                    pole2.append(hodnota3)
+                                    if os.path.isfile("hodnotaNad/kratkaH/" + file):
+                                        pass
+                                    else:
+                                        tab2 = {}
+                                        soubor2 = open("hodnotaNad/kratkaH/" + file, "w+", encoding="utf-8")
+                                        json.dump(tab2, soubor2, indent=4)
+                                        soubor2.close()
 
                         elif b == 1:
-                            try:
-                                if float(hodnota[1]) > hodnota2:
-                                    vysledek = float(hodnota[1]) / hodnota2
-                                else:
-                                    vysledek = hodnota2 / float(hodnota[1])
-                            except ValueError:
+                            if hodnota[1] == "" or hodnota2 == "":
+                                print("Chyba!")
                                 continue
 
-                            if vysledek > hod:
-                                dat = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                                dataN["cas"] = str(dat)
-                                dataN["rozdil remiza"] = str(round(vysledek, 2))
+                            if float(hodnota[1]) > 5 or hodnota2 > 5:
+                                pass
+                            else:
 
-                                if len(pole) == 0:
-                                    pole.append(hodnota[0])
-                                    pole.append(hodnota[1])
-                                    try:
-                                        pole.append(hodnota[2])
-                                    except IndexError:
-                                        print("Index:" + file)
-                                    pole2.append(hodnota1)
-                                    pole2.append(hodnota2)
-                                    pole2.append(hodnota3)
-                                    if os.path.isfile("hodnotaNad/kratkaH/" + file):
-                                        pass
+                                try:
+                                    if float(hodnota[1]) > hodnota2:
+                                        vysledek = float(hodnota[1]) / hodnota2
                                     else:
-                                        tab2 = {}
-                                        soubor2 = open("hodnotaNad/kratkaH/" + file, "w+", encoding="utf-8")
-                                        json.dump(tab2, soubor2, indent=4)
-                                        soubor2.close()
-                                else:
-                                    pass
+                                        vysledek = hodnota2 / float(hodnota[1])
+                                except ValueError:
+                                    continue
+
+                                if vysledek > hod:
+                                    dat = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                    dataN["cas"] = str(dat)
+                                    dataN["rozdil remiza"] = str(round(vysledek, 2))
+
+                                    if len(pole) == 0:
+                                        pole.append(hodnota[0])
+                                        pole.append(hodnota[1])
+                                        try:
+                                            pole.append(hodnota[2])
+                                        except IndexError:
+                                            print("Index:" + file)
+                                        pole2.append(hodnota1)
+                                        pole2.append(hodnota2)
+                                        pole2.append(hodnota3)
+                                        if os.path.isfile("hodnotaNad/kratkaH/" + file):
+                                            pass
+                                        else:
+                                            tab2 = {}
+                                            soubor2 = open("hodnotaNad/kratkaH/" + file, "w+", encoding="utf-8")
+                                            json.dump(tab2, soubor2, indent=4)
+                                            soubor2.close()
+                                    else:
+                                        pass
 
                         elif b == 2:
-                            try:
-                                if float(hodnota[2]) > hodnota3:
-                                    vysledek = float(hodnota[2]) / hodnota3
-                                else:
-                                    vysledek = hodnota3 / float(hodnota[2])
-                            except ValueError:
+                            if hodnota[2] == "" or hodnota3 == "":
+                                print("Chyba!")
                                 continue
 
-                            if vysledek > hod:
-                                dat = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                                dataN["cas"] = str(dat)
-                                dataN["rozdil hoste"] = str(round(vysledek, 2))
+                            if float(hodnota[2]) > 5 or hodnota3 > 5:
+                                pass
+                            else:
 
-                                if len(pole) == 0:
-                                    pole.append(hodnota[0])
-                                    pole.append(hodnota[1])
-                                    try:
-                                        pole.append(hodnota[2])
-                                    except IndexError:
-                                        print("Index:" + file)
-                                        time.sleep(5)
-
-                                    pole2.append(hodnota1)
-                                    pole2.append(hodnota2)
-                                    pole2.append(hodnota3)
-                                    if os.path.isfile("hodnotaNad/kratkaH/" + file):
-                                        pass
+                                try:
+                                    if float(hodnota[2]) > hodnota3:
+                                        vysledek = float(hodnota[2]) / hodnota3
                                     else:
-                                        tab2 = {}
-                                        soubor2 = open("hodnotaNad/kratkaH/" + file, "w+", encoding="utf-8")
-                                        json.dump(tab2, soubor2, indent=4)
-                                        soubor2.close()
+                                        vysledek = hodnota3 / float(hodnota[2])
+                                except ValueError:
+                                    continue
+
+                                if vysledek > hod:
+                                    dat = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                                    dataN["cas"] = str(dat)
+                                    dataN["rozdil hoste"] = str(round(vysledek, 2))
+
+                                    if len(pole) == 0:
+                                        pole.append(hodnota[0])
+                                        pole.append(hodnota[1])
+                                        try:
+                                            pole.append(hodnota[2])
+                                        except IndexError:
+                                            print("Index:" + file)
+                                            time.sleep(5)
+
+                                        pole2.append(hodnota1)
+                                        pole2.append(hodnota2)
+                                        pole2.append(hodnota3)
+                                        if os.path.isfile("hodnotaNad/kratkaH/" + file):
+                                            pass
+                                        else:
+                                            tab2 = {}
+                                            soubor2 = open("hodnotaNad/kratkaH/" + file, "w+", encoding="utf-8")
+                                            json.dump(tab2, soubor2, indent=4)
+                                            soubor2.close()
 
                     sbr2 = Path("hodnotaNad/kratkaH/" + file)
                     if sbr2.is_file():

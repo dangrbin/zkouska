@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 # sauce = urllib.request.urlopen('http://data.nowgoal.com/3in1odds/24_1629398.html').read()
 
 
-def hlavni(adresa, driver, liga):
+def hlavni(adresa, driver, cislo):
     """
     options = webdriver.ChromeOptions()
     options.set_headless(headless=False)
@@ -26,6 +26,15 @@ def hlavni(adresa, driver, liga):
     pocet = 0
     pocet2 = 7
     tabulka = []
+    spravne = ""
+    nazvy = []
+
+    poc = 0
+    for h4 in soup.find_all("h4"):
+        if poc == 1:
+            for nazev1 in h4.find_all("font"):
+                nazvy.append(nazev1.text)
+        poc += 1
 
     for every in soup.find_all("div", {"id": "div_d"}):
         for td in every.find_all("td"):
@@ -58,7 +67,7 @@ def hlavni(adresa, driver, liga):
         if prvek == "green;":
             zelena += 1
 
-        if zelena == 3:
-            print("Zelená!" + str(liga))
+        if zelena == cislo:
+            print("Zelená!" + str(nazvy[0] + " vs " + str(nazvy[1])))
             zelena = 0
 

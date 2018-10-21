@@ -9,7 +9,7 @@ from selenium.webdriver.support import expected_conditions as EC
 # sauce = urllib.request.urlopen('http://data.nowgoal.com/3in1odds/24_1629398.html').read()
 
 
-def hlavni(adresa, driver):
+def hlavni(adresa, driver, liga):
     """
     options = webdriver.ChromeOptions()
     options.set_headless(headless=False)
@@ -48,27 +48,17 @@ def hlavni(adresa, driver):
         tabulka_n.append(novy[1])
 
     vysledek = "red"
-    cervena = 0
     zelena = 0
 
     for prvek in tabulka_n:
 
         if prvek == "red;":
             zelena = 0
-            cervena += 1
 
         if prvek == "green;":
-            cervena = 0
             zelena += 1
 
         if zelena == 3:
-            print("Zelená!")
+            print("Zelená!" + str(liga))
             zelena = 0
-            cervena = 0
 
-        if cervena == 3:
-            print("Červená!")
-            zelena = 0
-            cervena = 0
-
-    print(tabulka_n)

@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 
 # sauce = urllib.request.urlopen('http://data.nowgoal.com/3in1odds/24_1629398.html').read()
-
+zpravy = []
 
 def hlavni(adresa, driver, cislo):
     """
@@ -25,9 +25,12 @@ def hlavni(adresa, driver, cislo):
 
     pocet = 0
     pocet2 = 7
+    pocet3 = 11
     tabulka = []
+    tabulka_live = []
     spravne = ""
     nazvy = []
+
 
     poc = 0
     for h4 in soup.find_all("h4"):
@@ -36,14 +39,33 @@ def hlavni(adresa, driver, cislo):
                 nazvy.append(nazev1.text)
         poc += 1
 
+    zapas = str(nazvy[0]) + " vs " + str(nazvy[1])
+
+    for every in soup.find_all("div", {"id": "div_d"}):
+        for td in every.find_all("td"):
+            if pocet < 11:
+                pass
+            else:
+                if pocet3 % 7 == 0:
+                    get = td.get("class")
+                    tabulka_live.append(get[0])
+                else:
+                    pass
+                pocet3 += 1
+
+            pocet += 1
+    pocet = 0
+    pocitadlo = 0
     for every in soup.find_all("div", {"id": "div_d"}):
         for td in every.find_all("td"):
             if pocet < 10:
                 pass
             else:
                 if pocet2 % 7 == 0:
-                    get = td.get("style")
-                    tabulka.append(get)
+                    if tabulka_live[pocitadlo] == "hg_blue":
+                        get = td.get("style")
+                        tabulka.append(get)
+                    pocitadlo += 1
                 else:
                     pass
                 pocet2 += 1
@@ -57,6 +79,7 @@ def hlavni(adresa, driver, cislo):
         tabulka_n.append(novy[1])
 
     vysledek = "red"
+    celkem = 0
     zelena = 0
 
     for prvek in tabulka_n:
@@ -68,6 +91,19 @@ def hlavni(adresa, driver, cislo):
             zelena += 1
 
         if zelena == cislo:
-            print("Zelená!" + str(nazvy[0] + " vs " + str(nazvy[1])))
+            celkem += 1
             zelena = 0
 
+    if celkem >= 1:
+
+        if zapas not in zpravy:
+            print(str(nazvy[0]) + " vs " + str(nazvy[1]) + ": Celkem = " + str(celkem))
+            zpravy.append(zapas)
+            zpravy.append(celkem)
+        else:
+            ind = zpravy.index(zapas)
+            if zpravy[ind+1] != celkem:
+                print(str(nazvy[0]) + " vs " + str(nazvy[1]) + ": Celkem = " + str(celkem))
+                zpravy[ind+1] = celkem
+
+    print(zpravy)

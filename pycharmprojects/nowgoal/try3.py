@@ -66,14 +66,16 @@ def funkce(cislo):
                     except (AttributeError, IndexError):
                         pass
 
-            print(tabul)
+            # print(tabul)
 
             for prvek in tabul:
                 try2.hlavni(prvek, driver, cislo)
 
     except KeyboardInterrupt:
+        try2.zpravy = []
         vloz = int(input("Zadej:"))
         funkce(vloz)
+
 
 
 funkce(3)
